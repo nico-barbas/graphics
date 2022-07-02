@@ -1,5 +1,6 @@
 import arcade
 from vector import Vector
+from polygon import generate_polygon
 
 
 class Open_Set:
@@ -27,27 +28,12 @@ class Open_Set:
         return self.indices[(at-1) % self.count]
 
 
-polygon = [Vector(1, 1),
-           Vector(2, 0),
-           Vector(2.5, 0.5),
-           Vector(2, 1),
-           Vector(2.5, 1.5),
-           Vector(2, 2),
-           ]
-
-open_set = Open_Set(len(polygon))
-
-triangles = {
-    "tri_count": 0,
-    "tri": [],
-}
-
 CLOCKWISE = 0
 COUNTER_CLOCKWISE = 1
 ORDER = COUNTER_CLOCKWISE
 
 
-def order_polygon():
+def order_polygon(polygon):
     bottom_most = Vector(10, -10)
     ti0 = -1
     for p, i in polygon:
@@ -71,7 +57,7 @@ def order_polygon():
             polygon.reverse()
 
 
-def triangulate():
+def triangulate(polygon):
     def check_edge(a: Vector, b: Vector) -> bool:
         cross_ab = a.cross(b)
         return cross_ab > 0
@@ -94,6 +80,13 @@ def triangulate():
     def add_triangle(i0, i1, i2):
         triangles["tri_count"] += 1
         triangles["tri"].append([i0, i1, i2])
+
+    open_set = Open_Set(len(polygon))
+
+    triangles = {
+        "tri_count": 0,
+        "tri": [],
+    }
 
     while open_set.count > 3:
         for i in range(open_set.count):
@@ -143,11 +136,28 @@ def triangulate():
     )
     open_set.count = 0
 
+    return triangles
 
-triangulate()
-print(triangles["tri_count"])
-for tri in triangles["tri"]:
-    print(tri)
+
+# gen_poly = generate_polygon(10, Vector(50, 50), Vector(750, 550))
+
+# test_poly = [Vector(1, 1),
+#              Vector(2, 0),
+#              Vector(2.5, 0.5),
+#              Vector(2, 1),
+#              Vector(2.5, 1.5),
+#              Vector(2, 2),
+#              ]
+
+
+# triangles = triangulate(gen_poly)
+# print(triangles["tri_count"])
+# for tri in triangles["tri"]:
+#     print(tri)
+
+
+POLYGON_VIEW = 0
+TRIANGULATED_VIEW = 1
 
 
 class Display(arcade.Window):
@@ -155,23 +165,47 @@ class Display(arcade.Window):
         super().__init__(w, h, t)
         arcade.set_background_color(arcade.color.BLACK)
 
+        self.state = POLYGON_VIEW
+        self.vertex_count = 20
+        self.polygon = generate_polygon(
+            self.vertex_count, Vector(50, 50), Vector(750, 550))
+        self.triangles = triangulate(self.polygon)
+
+    def on_key_release(self, symbol: int, modifiers: int):
+        if symbol == arcade.key.SPACE:
+            self.state += 1
+            self.state %= 2
+        elif symbol == arcade.key.E:
+            self.polygon = generate_polygon(
+                self.vertex_count, Vector(50, 50), Vector(750, 550))
+            self.triangles = triangulate(self.polygon)
+        return
+
     def on_draw(self):
         self.clear()
         arcade.start_render()
-        for tri in triangles["tri"]:
-            a = polygon[tri[0]]
-            b = polygon[tri[1]]
-            c = polygon[tri[2]]
+        if self.state == POLYGON_VIEW:
+            for i in range(len(self.polygon)):
+                p = self.polygon[i]
+                p1 = self.polygon[(i + 1) % len(self.polygon)]
+                arcade.draw_line(p.x, p.y, p1.x, p1.y,
+                                 arcade.color.AFRICAN_VIOLET, 2)
+                arcade.draw_point(p.x, p.y, arcade.color.WHITE, 4)
+        else:
+            for tri in self.triangles["tri"]:
+                a = self.polygon[tri[0]]
+                b = self.polygon[tri[1]]
+                c = self.polygon[tri[2]]
 
-            ax = a.x * 100
-            ay = a.y * 100
-            bx = b.x * 100
-            by = b.y * 100
-            cx = c.x * 100
-            cy = c.y * 100
-            arcade.draw_line(ax, ay, bx, by, arcade.color.WHITE, 1)
-            arcade.draw_line(ax, ay, cx, cy, arcade.color.WHITE, 1)
-            arcade.draw_line(bx, by, cx, cy, arcade.color.WHITE, 1)
+                ax = a.x  # * 100
+                ay = a.y  # * 100
+                bx = b.x  # * 100
+                by = b.y  # * 100
+                cx = c.x  # * 100
+                cy = c.y  # * 100
+                arcade.draw_line(ax, ay, bx, by, arcade.color.WHITE, 1)
+                arcade.draw_line(ax, ay, cx, cy, arcade.color.WHITE, 1)
+                arcade.draw_line(bx, by, cx, cy, arcade.color.WHITE, 1)
 
 
 display = Display(800, 600, "Triangulation")
