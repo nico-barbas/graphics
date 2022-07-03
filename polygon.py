@@ -28,7 +28,7 @@ def generate_polygon(vertex_count: int, min: Vector, max: Vector):
 
     polygon.sort(key=sortAngle)
 
-    # remove all the colinear vectors
+    # remove all the collinear vectors
     ok = False
     while True:
         found = False
