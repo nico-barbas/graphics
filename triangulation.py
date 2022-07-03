@@ -139,23 +139,6 @@ def triangulate(polygon):
     return triangles
 
 
-# gen_poly = generate_polygon(10, Vector(50, 50), Vector(750, 550))
-
-# test_poly = [Vector(1, 1),
-#              Vector(2, 0),
-#              Vector(2.5, 0.5),
-#              Vector(2, 1),
-#              Vector(2.5, 1.5),
-#              Vector(2, 2),
-#              ]
-
-
-# triangles = triangulate(gen_poly)
-# print(triangles["tri_count"])
-# for tri in triangles["tri"]:
-#     print(tri)
-
-
 POLYGON_VIEW = 0
 TRIANGULATED_VIEW = 1
 
