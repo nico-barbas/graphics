@@ -24,8 +24,14 @@ class Rule(enum):
     Down = 4,
 
 
-class Solver:
+class Entropy_Tile:
     def __init__(self) -> None:
+        self.entropy_count = 5
+        self.open_set = [True for i in range(5)]
+
+
+class Solver:
+    def __init__(self, width: int, height: int) -> None:
         self.rules = []
         self.rules[Rule.Blank] = [
             [True, True, False, False, False],
@@ -34,26 +40,31 @@ class Solver:
             [True, False, False, False, True],
         ]
         self.rules[Rule.Left] = [
-            [True, True, False, False, False],
-            [True, False, True, False, False],
+            [False, False, True, True, True],
+            [False, True, False, True, True],
             [True, False, False, True, False],
+            [False, True, True, True, False],
+        ]
+        self.rules[Rule.Up] = [
+            [False, False, True, True, True],
+            [False, True, False, True, True],
+            [False, True, True, False, True],
             [True, False, False, False, True],
         ]
-        self.rules[Rule.Blank] = [
+        self.rules[Rule.Right] = [
             [True, True, False, False, False],
-            [True, False, True, False, False],
-            [True, False, False, True, False],
-            [True, False, False, False, True],
+            [False, True, False, True, True],
+            [False, True, True, False, True],
+            [False, True, True, True, False],
         ]
-        self.rules[Rule.Blank] = [
-            [True, True, False, False, False],
+        self.rules[Rule.Down] = [
+            [False, False, True, True, True],
             [True, False, True, False, False],
-            [True, False, False, True, False],
-            [True, False, False, False, True],
+            [False, True, True, False, True],
+            [False, True, True, True, False],
         ]
-        self.rules[Rule.Blank] = [
-            [True, True, False, False, False],
-            [True, False, True, False, False],
-            [True, False, False, True, False],
-            [True, False, False, False, True],
-        ]
+
+        self.tiles = [Entropy_Tile() for i in range(width*height)]
+
+    def solve(self):
+        pass
