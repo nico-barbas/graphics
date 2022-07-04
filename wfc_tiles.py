@@ -28,6 +28,7 @@ class Entropy_Tile:
     def __init__(self) -> None:
         self.entropy_count = 5
         self.open_set = [True for i in range(5)]
+        self.value = -1
 
 
 class Solver:
@@ -64,7 +65,38 @@ class Solver:
             [False, True, True, True, False],
         ]
 
+        self.width = width
+        self.height = height
         self.tiles = [Entropy_Tile() for i in range(width*height)]
 
     def solve(self):
         pass
+
+    def collapse(self):
+        def get_left(self, x: int, y: int) -> Entropy_Tile:
+            if x > 0:
+                return self.tiles[y*self.width + x-1]
+            else:
+                return None
+
+        def get_right(self, x: int, y: int) -> Entropy_Tile:
+            if x < self.width - 1:
+                return self.tiles[y*self.width + x+1]
+            else:
+                return None
+
+        def get_up(self, x: int, y: int) -> Entropy_Tile:
+            if y > 0:
+                return self.tiles[(y-1)*self.width + x]
+            else:
+                return None
+
+        def get_left(self, x: int, y: int) -> Entropy_Tile:
+            if y > self.height-1:
+                return self.tiles[(y+1)*self.width + x]
+            else:
+                return None
+
+        for y in range(self.height):
+            for x in range(self.width):
+                pass
